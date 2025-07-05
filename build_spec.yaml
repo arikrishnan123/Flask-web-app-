@@ -1,0 +1,19 @@
+version: 0.1
+component: build
+shell: bash
+steps:
+  - type: Command
+    name: Build Docker Image
+    command: |
+      docker build -t iad.ocir.io/<tenancy-namespace>/<repo-name>:${OCI_BUILD_RUN_ID} .
+
+  - type: Command
+    name: Push to OCIR
+    command: |
+      echo $OCI_AUTH_TOKEN | docker login -u '<tenancy-namespace>/<username>' --password-stdin iad.ocir.io
+      docker push iad.ocir.io/<tenancy-namespace>/<repo-name>:${OCI_BUILD_RUN_ID}
+
+outputArtifacts:
+  - name: image
+    type: DOCKER_IMAGE
+    location: iad.ocir.io/<tenancy-namespace>/<repo-name>:${OCI_BUILD_RUN_ID}
